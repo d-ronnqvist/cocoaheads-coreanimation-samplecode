@@ -36,25 +36,44 @@ const CGFloat kOutlineWidthPercentage = 0.075;
 @implementation DRPieChartProgressView
 @synthesize pieShape = _pieShape;
 
+static inline CGFloat degreesToRadians(CGFloat degrees) {
+	return degrees * M_PI / 180.0;
+}
+
+static CGAffineTransform CGAffineTransformForRotatingRectAroundCenter(CGRect rect, CGFloat angle) {
+	CGAffineTransform transform = CGAffineTransformIdentity;
+	
+	transform = CGAffineTransformTranslate(transform, CGRectGetMidX(rect), CGRectGetMidY(rect));
+	transform = CGAffineTransformRotate(transform, angle);
+	transform = CGAffineTransformTranslate(transform, -CGRectGetMidX(rect), -CGRectGetMidY(rect));
+	
+	return transform;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
+		CGRect bounds = self.bounds;
 		
 		CGColorRef foregroundColor = [[UIColor whiteColor] CGColor];
 		CGColorRef clearColor = [[UIColor clearColor] CGColor];
 		
         // Make sure the circles will fit the frame
-        CGFloat radius = MIN(frame.size.width, frame.size.height)/2;
-        
+        CGFloat outerRadius = MIN(frame.size.width, frame.size.height)/2;
+		
         // Calculate the radius for the outline. Since strokes are centered,
         // the shape needs to be inset half the stroke width.
-        CGFloat outlineWidth = round(radius*kOutlineWidthPercentage);
-        CGFloat inset = outlineWidth/2;
-        
+        CGFloat outlineWidth = round(outerRadius*kOutlineWidthPercentage);
+        CGFloat outlineInset = outlineWidth/2;
+		CGRect outlineRect = CGRectInset(bounds, outlineInset, outlineInset);
+		
+		CGAffineTransform outlineTransform = CGAffineTransformForRotatingRectAroundCenter(outlineRect, degreesToRadians(-90.0));
+		CGPathRef outlinePath = CGPathCreateWithEllipseInRect(outlineRect, &outlineTransform);
+
         CAShapeLayer *outlineShape = [CAShapeLayer layer];
-        outlineShape.path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, inset, inset)
-                                                        cornerRadius:radius-inset] CGPath];
+        outlineShape.path = outlinePath;
+		
         // Draw only the line of the circular outline shape
         outlineShape.fillColor =    clearColor;
         outlineShape.strokeColor =  foregroundColor;
@@ -63,17 +82,21 @@ const CGFloat kOutlineWidthPercentage = 0.075;
         // Create the pie chart shape layer. It should fill from the center,
         // all the way out (excluding some extra space (equal to the width of
         // the outline)).
+        CGFloat pieChartInset = outerRadius/2 + outlineWidth;
+		CGRect pieChartRect = CGRectInset(bounds, pieChartInset, pieChartInset);
+		
+		CGAffineTransform pieChartTransform = CGAffineTransformForRotatingRectAroundCenter(pieChartRect, degreesToRadians(-90.0));
+		CGPathRef pieChartPath = CGPathCreateWithEllipseInRect(pieChartRect, &pieChartTransform);
+
         CAShapeLayer *pieChartShape = [CAShapeLayer layer];
-        inset = radius/2 + outlineWidth; // The inset is updated here
-        pieChartShape.path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, inset, inset)
-                                                   cornerRadius:radius-inset].CGPath;
+        pieChartShape.path = pieChartPath;
         
         // We don't want to fill the pie chart since that will be visible
         // even when we change the stroke start and stroke end. Instead
         // we only draw the stroke with the above calculated width.
         pieChartShape.fillColor =     clearColor;
         pieChartShape.strokeColor =   foregroundColor;
-        pieChartShape.lineWidth =     (radius-inset)*2;
+        pieChartShape.lineWidth =     (outerRadius-pieChartInset)*2;
         
         // Add sublayers
         // NOTE: the following code is used in a UIView subclass (thus self is a view)
@@ -82,7 +105,9 @@ const CGFloat kOutlineWidthPercentage = 0.075;
         [self.layer addSublayer:outlineShape];
         [self.layer addSublayer:pieChartShape];
         self.pieShape = pieChartShape;
-        
+		
+		CGPathRelease(outlinePath);
+		CGPathRelease(pieChartPath);
     }
     return self;
 }
