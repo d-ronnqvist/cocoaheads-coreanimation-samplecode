@@ -40,7 +40,10 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+		
+		CGColorRef foregroundColor = [[UIColor whiteColor] CGColor];
+		CGColorRef clearColor = [[UIColor clearColor] CGColor];
+		
         // Make sure the circles will fit the frame
         CGFloat radius = MIN(frame.size.width, frame.size.height)/2;
         
@@ -53,8 +56,8 @@
         outlineShape.path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, inset, inset)
                                                         cornerRadius:radius-inset] CGPath];
         // Draw only the line of the circular outline shape
-        [outlineShape setFillColor:   [[UIColor clearColor] CGColor]];
-        [outlineShape setStrokeColor: [[UIColor whiteColor] CGColor]];
+        [outlineShape setFillColor:   clearColor];
+        [outlineShape setStrokeColor: foregroundColor];
         [outlineShape setLineWidth:   outlineWidth];
         
         // Create the pie chart shape layer. It should fill from the center,
@@ -68,8 +71,8 @@
         // We don't want to fill the pie chart since that will be visible
         // even when we change the stroke start and stroke end. Instead
         // we only draw the stroke with the above calculated width.
-        [pieChartShape setFillColor:    [[UIColor clearColor] CGColor]];
-        [pieChartShape setStrokeColor:  [[UIColor whiteColor] CGColor]];
+        [pieChartShape setFillColor:    clearColor];
+        [pieChartShape setStrokeColor:  foregroundColor];
         [pieChartShape setLineWidth:    (radius-inset)*2];   
         
         // Add sublayers
