@@ -27,7 +27,7 @@
 
 #import <tgmath.h>
 
-#define kOutlineWidthPercentage 0.075
+const CGFloat kOutlineWidthPercentage = 0.075;
 
 @interface DRPieChartProgressView (/*Private*/)
 @property (strong, nonatomic) CAShapeLayer *pieShape;
