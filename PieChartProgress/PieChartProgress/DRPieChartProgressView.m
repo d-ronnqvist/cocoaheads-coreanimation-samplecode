@@ -64,6 +64,11 @@ static CGAffineTransform CGAffineTransformForScalingRectAroundCenter(CGRect rect
 {
     self = [super initWithFrame:frame];
     if (self) {
+		// NOTE: the following code is used in a UIView subclass (thus self is a view)
+		// If you instead chose to use this code in a view controller you should instead
+		// use self.view.layer to access the view of your view controller.
+		CALayer *rootLayer = self.layer;
+		
 		CGRect bounds = self.bounds;
 		
 		CGColorRef foregroundColor = [[UIColor whiteColor] CGColor];
@@ -111,11 +116,8 @@ static CGAffineTransform CGAffineTransformForScalingRectAroundCenter(CGRect rect
         pieChartShape.lineWidth =     (outerRadius-pieChartInset)*2;
         
         // Add sublayers
-        // NOTE: the following code is used in a UIView subclass (thus self is a view)
-        // If you instead chose to use this code in a view controller you should instead
-        // use self.view.layer to access the view of your view controller.
-        [self.layer addSublayer:outlineShape];
-        [self.layer addSublayer:pieChartShape];
+        [rootLayer addSublayer:outlineShape];
+        [rootLayer addSublayer:pieChartShape];
         self.pieShape = pieChartShape;
 		
 		_pieShape.strokeStart = 0.0;
