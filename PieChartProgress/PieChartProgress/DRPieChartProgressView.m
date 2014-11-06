@@ -50,7 +50,7 @@ static CGAffineTransform CGAffineTransformForRotatingRectAroundCenter(CGRect rec
 	return transform;
 }
 
-- (id)initWithFrame:(CGRect)frame
+- (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -121,8 +121,8 @@ static CGAffineTransform CGAffineTransformForRotatingRectAroundCenter(CGRect rec
     countdownAnimation.removedOnCompletion =  NO;   // Remain stroked after the animation..
     
     // Animate from all of the stroke being drawn to the no part of the stroke being drawn (clock-wise)
-    countdownAnimation.fromValue = [NSNumber numberWithFloat:0.0];
-    countdownAnimation.toValue =   [NSNumber numberWithFloat:1.0];
+    countdownAnimation.fromValue = @0.0f;
+    countdownAnimation.toValue =   @1.0f;
     
     // The countdown should animate linearly to stay true to the actual amount of time left
     countdownAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
