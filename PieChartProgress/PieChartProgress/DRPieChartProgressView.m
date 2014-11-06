@@ -56,9 +56,9 @@ const CGFloat kOutlineWidthPercentage = 0.075;
         outlineShape.path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, inset, inset)
                                                         cornerRadius:radius-inset] CGPath];
         // Draw only the line of the circular outline shape
-        [outlineShape setFillColor:   clearColor];
-        [outlineShape setStrokeColor: foregroundColor];
-        [outlineShape setLineWidth:   outlineWidth];
+        outlineShape.fillColor =    clearColor;
+        outlineShape.strokeColor =  foregroundColor;
+        outlineShape.lineWidth =    outlineWidth;
         
         // Create the pie chart shape layer. It should fill from the center,
         // all the way out (excluding some extra space (equal to the width of
@@ -71,9 +71,9 @@ const CGFloat kOutlineWidthPercentage = 0.075;
         // We don't want to fill the pie chart since that will be visible
         // even when we change the stroke start and stroke end. Instead
         // we only draw the stroke with the above calculated width.
-        [pieChartShape setFillColor:    clearColor];
-        [pieChartShape setStrokeColor:  foregroundColor];
-        [pieChartShape setLineWidth:    (radius-inset)*2];   
+        pieChartShape.fillColor =     clearColor;
+        pieChartShape.strokeColor =   foregroundColor;
+        pieChartShape.lineWidth =     (radius-inset)*2;
         
         // Add sublayers
         // NOTE: the following code is used in a UIView subclass (thus self is a view)
@@ -81,7 +81,7 @@ const CGFloat kOutlineWidthPercentage = 0.075;
         // use self.view.layer to access the view of your view controller.
         [self.layer addSublayer:outlineShape];
         [self.layer addSublayer:pieChartShape];
-        [self setPieShape:pieChartShape];
+        self.pieShape = pieChartShape;
         
     }
     return self;
@@ -91,21 +91,21 @@ const CGFloat kOutlineWidthPercentage = 0.075;
     // Animate the strokeStart of the shapeLayer to give the effect that the clock is ticking down
     CABasicAnimation *countdownAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
     
-    [countdownAnimation setDuration:            durationInSeconds];
-    [countdownAnimation setRepeatCount:         1.0];  // Animate only once..
-    [countdownAnimation setRemovedOnCompletion: NO];   // Remain stroked after the animation..
+    countdownAnimation.duration =             durationInSeconds;
+    countdownAnimation.repeatCount =          1.0;  // Animate only once..
+    countdownAnimation.removedOnCompletion =  NO;   // Remain stroked after the animation..
     
     // Animate from all of the stroke being drawn to the no part of the stroke being drawn (clock-wise)
-    [countdownAnimation setFromValue:[NSNumber numberWithFloat:0.0]];
-    [countdownAnimation setToValue:  [NSNumber numberWithFloat:1.0]];
+    countdownAnimation.fromValue = [NSNumber numberWithFloat:0.0];
+    countdownAnimation.toValue =   [NSNumber numberWithFloat:1.0];
     
     // The countdown should animate linearly to stay true to the actual amount of time left
-    [countdownAnimation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    countdownAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     
     // After the animation the strokeEnd should be set to 1.0 to completely hide the pie-chart clock
-    [[self pieShape] setStrokeStart:1.0];
+    _pieShape.strokeStart = 1.0;
     // Add the animation to the circle
-    [[self pieShape] addAnimation:countdownAnimation forKey:@"drawCircleAnimation"];
+    [_pieShape addAnimation:countdownAnimation forKey:@"drawCircleAnimation"];
 }
 
 
