@@ -48,7 +48,7 @@
         CGFloat inset = outlineWidth/2;
         
         CAShapeLayer *outlineShape = [CAShapeLayer layer];
-        outlineShape.path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset([self bounds], inset, inset) 
+        outlineShape.path = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, inset, inset)
                                                         cornerRadius:radius-inset] CGPath];
         // Draw only the line of the circular outline shape
         [outlineShape setFillColor:   [[UIColor clearColor] CGColor]];
@@ -74,8 +74,8 @@
         // NOTE: the following code is used in a UIView subclass (thus self is a view)
         // If you instead chose to use this code in a view controller you should instead
         // use self.view.layer to access the view of your view controller.
-        [[self layer] addSublayer:outlineShape];
-        [[self layer] addSublayer:pieChartShape];
+        [self.layer addSublayer:outlineShape];
+        [self.layer addSublayer:pieChartShape];
         [self setPieShape:pieChartShape];
         
     }
