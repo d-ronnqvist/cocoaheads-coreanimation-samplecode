@@ -118,6 +118,9 @@ static CGAffineTransform CGAffineTransformForScalingRectAroundCenter(CGRect rect
         [self.layer addSublayer:pieChartShape];
         self.pieShape = pieChartShape;
 		
+		_pieShape.strokeStart = 0.0;
+		_pieShape.strokeEnd = 0.0;
+
 		CGPathRelease(outlinePath);
 		CGPathRelease(pieChartPath);
     }
@@ -126,21 +129,21 @@ static CGAffineTransform CGAffineTransformForScalingRectAroundCenter(CGRect rect
 
 - (void)startCountdownWithDuration:(NSUInteger)durationInSeconds {    
     // Animate the strokeStart of the shapeLayer to give the effect that the clock is ticking down
-    CABasicAnimation *countdownAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
+    CABasicAnimation *countdownAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
     
     countdownAnimation.duration =             durationInSeconds;
     countdownAnimation.repeatCount =          1.0;  // Animate only once..
-    countdownAnimation.removedOnCompletion =  NO;   // Remain stroked after the animation..
+    countdownAnimation.removedOnCompletion =  YES;  // Remaining stroked after the animation is set up below.
     
-    // Animate from all of the stroke being drawn to the no part of the stroke being drawn (clock-wise)
+    // Animate from no part of the stroke being drawn to all of the stroke being drawn (clock-wise)
     countdownAnimation.fromValue = @0.0f;
     countdownAnimation.toValue =   @1.0f;
     
     // The countdown should animate linearly to stay true to the actual amount of time left
     countdownAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     
-    // After the animation the strokeEnd should be set to 1.0 to completely hide the pie-chart clock
-    _pieShape.strokeStart = 1.0;
+    // After the animation the strokeEnd should be set to toValue to completely hide the pie-chart clock
+    _pieShape.strokeEnd = 1.0;
     // Add the animation to the circle
     [_pieShape addAnimation:countdownAnimation forKey:@"drawCircleAnimation"];
 }
