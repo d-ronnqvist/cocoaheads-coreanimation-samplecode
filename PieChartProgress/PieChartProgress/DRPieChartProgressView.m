@@ -50,6 +50,16 @@ static CGAffineTransform CGAffineTransformForRotatingRectAroundCenter(CGRect rec
 	return transform;
 }
 
+static CGAffineTransform CGAffineTransformForScalingRectAroundCenter(CGRect rect, CGFloat sx, CGFloat sy) {
+	CGAffineTransform transform = CGAffineTransformIdentity;
+	
+	transform = CGAffineTransformTranslate(transform, CGRectGetMidX(rect), CGRectGetMidY(rect));
+	transform = CGAffineTransformScale(transform, sx, sy);
+	transform = CGAffineTransformTranslate(transform, -CGRectGetMidX(rect), -CGRectGetMidY(rect));
+	
+	return transform;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -86,6 +96,8 @@ static CGAffineTransform CGAffineTransformForRotatingRectAroundCenter(CGRect rec
 		CGRect pieChartRect = CGRectInset(bounds, pieChartInset, pieChartInset);
 		
 		CGAffineTransform pieChartTransform = CGAffineTransformForRotatingRectAroundCenter(pieChartRect, degreesToRadians(-90.0));
+		//CGAffineTransform pieChartTransformFlip = CGAffineTransformForScalingRectAroundCenter(outlineRect, -1.0, 1.0); // Flip left<->right.
+		//pieChartTransform = CGAffineTransformConcat(pieChartTransform, pieChartTransformFlip);
 		CGPathRef pieChartPath = CGPathCreateWithEllipseInRect(pieChartRect, &pieChartTransform);
 
         CAShapeLayer *pieChartShape = [CAShapeLayer layer];
