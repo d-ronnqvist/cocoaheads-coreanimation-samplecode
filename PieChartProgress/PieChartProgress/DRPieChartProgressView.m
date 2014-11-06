@@ -25,6 +25,8 @@
 #import "DRPieChartProgressView.h"
 #import <QuartzCore/QuartzCore.h>
 
+#import <tgmath.h>
+
 #define kOutlineWidthPercentage 0.075
 
 @interface DRPieChartProgressView (/*Private*/)
